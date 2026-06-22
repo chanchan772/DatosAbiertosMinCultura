@@ -14,9 +14,12 @@ from pathlib import Path
 import pandas as pd
 from loguru import logger
 
-from cinepredict.config import RAW_DIR, settings
+from cinepredict.config import RAW_DIR, REFERENCE_DIR, settings
 
 PAGE_SIZE = 50_000
+
+# IDs de recurso (4x4) verificados en datos.gov.co
+DIVIPOLA_DATASET_ID = "gdxc-w37w"  # DIVIPOLA - Códigos municipios (DANE), con lat/lon
 
 
 def _socrata_client():
@@ -67,3 +70,32 @@ def download_dane_poblacion() -> Path:
     return download_socrata_dataset(
         settings.dane_poblacion_dataset_id, RAW_DIR / "dane_poblacion.parquet"
     )
+
+
+def download_divipola() -> Path:
+    """Descarga el diccionario DIVIPOLA del DANE desde datos.gov.co (API SODA).
+
+    Recurso verificado `gdxc-w37w`: 1.122 municipios con código, nombre,
+    departamento y coordenadas (longitud/latitud con coma decimal en origen).
+    Se guarda en `data/reference/divipola.csv` (sí versionado), que es la llave
+    territorial canónica del proyecto y la fuente de centroides para accesibilidad.
+    """
+    client = _socrata_client()
+    rows = client.get(DIVIPOLA_DATASET_ID, limit=5000)
+    df = pd.DataFrame.from_records(rows)
+
+    # Normaliza al esquema interno; las coords vienen con coma decimal ("-75,58")
+    out_df = pd.DataFrame({
+        "cod_divipola": df["cod_mpio"],
+        "municipio": df["nom_mpio"],
+        "departamento": df["dpto"],
+        "tipo": df.get("tipo_municipio"),
+        "lon": df["longitud"].str.replace(",", ".", regex=False).astype(float),
+        "lat": df["latitud"].str.replace(",", ".", regex=False).astype(float),
+    })
+
+    out_path = REFERENCE_DIR / "divipola.csv"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_csv(out_path, index=False, encoding="utf-8")
+    logger.success(f"DIVIPOLA: {len(out_df):,} municipios -> {out_path}")
+    return out_path

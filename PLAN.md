@@ -1,7 +1,7 @@
 # 📋 PLAN DE TRABAJO — CinePredict
 
 > **Documento vivo de seguimiento.** Se actualiza a medida que avanza el proyecto.
-> Última actualización: **2026-06-22**
+> Última actualización: **2026-06-22** (verificación de fuentes vía API SODA)
 
 **Proyecto:** Modelo predictivo de espectadores de cine en Colombia (horizonte 2027)
 **Concurso:** Datos al Ecosistema 2026 — **Reto 8: Cultura y Turismo**
@@ -16,7 +16,7 @@
 | Fase | Descripción | Estado | Avance |
 |------|-------------|--------|--------|
 | **0** | Scaffold del repositorio | ✅ Completo | 100% |
-| **1** | Integración y limpieza de datos | 🟡 En curso (estructura lista, faltan datos reales) | 30% |
+| **1** | Integración y limpieza de datos | 🟡 En curso (DIVIPOLA por API ✅; faltan SIREC y DANE) | 40% |
 | **2** | Modelado predictivo (A·B·C) | 🟡 Estructura lista, sin entrenar | 20% |
 | **3** | Visualización e interfaz | 🟡 Esqueleto del tablero | 15% |
 
@@ -176,17 +176,29 @@ exhibidor, con vista espejo en Power BI para apropiación institucional.
 
 ---
 
-## 🗂️ Fuentes de datos
+## 🗂️ Fuentes de datos — verificadas en datos.gov.co (API SODA)
 
-| Fuente | Tipo | Uso | Estado |
-|--------|------|-----|--------|
-| **SIREC** (DACMI, datos.gov.co) | Primaria | Asistencia por sala/título/período | ⬜ Pendiente descargar |
-| **DANE** proyecciones población (Censo 2018) | Primaria | Demanda potencial (demografía) | ⬜ Pendiente descargar |
-| **DIVIPOLA** (DANE/MGN) | Referencia | Llave territorial canónica | ⬜ Pendiente cargar |
-| INVIAS / DNP red vial | Complementaria | Accesibilidad intermunicipal | ⬜ En evaluación |
-| DNP MDM / Ley 617 | Complementaria | Contexto territorial | ⬜ En evaluación |
-| MGN (DANE) cartografía | Complementaria | Cruces espaciales | ⬜ En evaluación |
-| OpenStreetMap (OSMnx) | Complementaria | Matrices de tiempo de viaje | ⬜ En evaluación |
+> Catálogo completo en [`conf/fuentes.yaml`](conf/fuentes.yaml). Endpoint de consumo:
+> `https://www.datos.gov.co/resource/<ID>.json` · metadatos: `/api/views/<ID>.json`.
+
+| Fuente | ID dataset | Consumo | Estado |
+|--------|-----------|---------|--------|
+| **DIVIPOLA — Códigos municipios** (DANE) | `gdxc-w37w` | ✅ **API SODA** (1.122 mpios, con lat/lon) | ✅ **Cableado y descargado** → `data/reference/divipola.csv` |
+| **DANE** proyecciones población (CNPV 2018) | — | ⚠️ Descarga portal DANE (no hay API nacional única) | ⬜ Pendiente |
+| **SIREC** exhibición (DACMI) | — | Aporte directo del equipo | ⬜ No publicado en datos abiertos aún |
+| Salas de cine y cinematecas | `p2nc-v3da` | ❌ No tabular (mapa/historia) | Descartado para API |
+| INVIAS / DNP red vial | — | Descarga / servicios geo | ⬜ En evaluación |
+| OpenStreetMap (OSMnx) | — | API Overpass | ⬜ En evaluación |
+
+**Prueba de consumo por API (reproducible):**
+```bash
+# Metadatos del recurso
+curl "https://www.datos.gov.co/api/views/gdxc-w37w.json"
+# Datos (primeras 2 filas)
+curl "https://www.datos.gov.co/resource/gdxc-w37w.json?\$limit=2"
+# Desde el pipeline del proyecto
+cinepredict download --source divipola
+```
 
 ---
 

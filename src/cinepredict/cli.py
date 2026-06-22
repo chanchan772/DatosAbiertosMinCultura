@@ -25,6 +25,7 @@ app = typer.Typer(
 class Source(str, Enum):
     sirec = "sirec"
     dane = "dane"
+    divipola = "divipola"
     all = "all"
 
 
@@ -36,6 +37,9 @@ def download(
     ensure_dirs()
     from cinepredict.data import download as dl
 
+    if source in (Source.divipola, Source.all):
+        logger.info("Descargando DIVIPOLA (datos.gov.co API)…")
+        dl.download_divipola()
     if source in (Source.sirec, Source.all):
         logger.info("Descargando SIREC…")
         dl.download_sirec()

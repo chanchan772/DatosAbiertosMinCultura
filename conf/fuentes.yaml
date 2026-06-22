@@ -1,0 +1,63 @@
+# Catálogo de fuentes de datos — consumo por API de datos abiertos
+# Verificado contra la API SODA (Socrata) de datos.gov.co el 2026-06-22.
+#
+# Endpoint de consumo por API:  https://www.datos.gov.co/resource/<ID>.json
+# Endpoint de metadatos:        https://www.datos.gov.co/api/views/<ID>.json
+# Documentación SODA: https://dev.socrata.com/
+
+fuentes:
+
+  divipola:
+    nombre: "DIVIPOLA - Códigos municipios"
+    proveedor: "DANE (publicado en datos.gov.co)"
+    dataset_id: "gdxc-w37w"
+    portal: "https://www.datos.gov.co/Mapas-Nacionales/DIVIPOLA-C-digos-municipios/gdxc-w37w"
+    api: "https://www.datos.gov.co/resource/gdxc-w37w.json"
+    consumo: "API SODA"          # ✅ consumible por API
+    estado: "verificado"
+    registros: 1122
+    columnas: [cod_dpto, dpto, cod_mpio, nom_mpio, tipo_municipio, longitud, latitud]
+    uso: >
+      Llave territorial canónica (código de 5 dígitos) y centroides (lat/lon)
+      de cada municipio para los cruces espaciales y la accesibilidad.
+    notas: "Las coordenadas vienen con coma decimal; se normalizan a punto."
+
+  dane_poblacion:
+    nombre: "Proyecciones de población municipal (CNPV 2018)"
+    proveedor: "DANE"
+    dataset_id: null              # no hay una nacional única tabular en datos.gov.co
+    portal: "https://www.dane.gov.co/index.php/estadisticas-por-tema/demografia-y-poblacion/proyecciones-de-poblacion"
+    api: null
+    consumo: "descarga (portal DANE)"   # ⚠️ no expuesta por API SODA nacional
+    estado: "pendiente"
+    uso: >
+      Variables demográficas por municipio y grupo etario para el componente A
+      (demanda potencial). En datos.gov.co solo hay versiones municipales
+      fragmentadas; la serie nacional oficial se descarga del portal del DANE.
+
+  sirec:
+    nombre: "SIREC - Exhibición cinematográfica"
+    proveedor: "DACMI - Ministerio de las Culturas"
+    dataset_id: null
+    portal: "https://www.mincultura.gov.co/.../sistema-de-informacion-y-registro-cinematografico-sirec.aspx"
+    api: null
+    consumo: "aporte directo del equipo (administradores del SIREC)"
+    estado: "no publicado en datos abiertos aún"
+    uso: >
+      Fuente primaria: espectadores por sala, título, período y municipio.
+      Unidad de análisis sala × municipio × período.
+
+  # --- Complementarias (en evaluación) ---
+  invias_red_vial:
+    nombre: "Red vial nacional"
+    proveedor: "INVIAS / DNP"
+    consumo: "descarga / servicios geográficos"
+    estado: "en evaluación"
+    uso: "Accesibilidad intermunicipal (red primaria/secundaria)."
+
+  openstreetmap:
+    nombre: "OpenStreetMap (vía OSMnx)"
+    proveedor: "OSM"
+    consumo: "API Overpass (OSMnx)"
+    estado: "en evaluación"
+    uso: "Red vial detallada para matrices de tiempo de desplazamiento."

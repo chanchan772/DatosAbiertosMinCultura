@@ -27,4 +27,27 @@ Población y Vivienda 2018, con composición etaria.
 ## Llave territorial
 
 Todas las fuentes se reconcilian contra el código **DIVIPOLA** (5 dígitos) del
-DANE. El diccionario de referencia debe ubicarse en `data/reference/divipola.csv`.
+DANE. El diccionario se **consume directamente por API** desde datos.gov.co
+(recurso `gdxc-w37w`) y se materializa en `data/reference/divipola.csv`:
+
+```bash
+cinepredict download --source divipola
+# equivalente directo a la API SODA:
+curl "https://www.datos.gov.co/resource/gdxc-w37w.json?\$limit=2"
+```
+
+Este recurso aporta también las **coordenadas (lat/lon)** de cada municipio,
+usadas como centroides para las variables de accesibilidad.
+
+## Consumo por API (SODA / Socrata)
+
+Todos los datasets tabulares de datos.gov.co exponen API REST:
+
+| Propósito | Endpoint |
+|-----------|----------|
+| Datos | `https://www.datos.gov.co/resource/<ID>.json` |
+| Metadatos / esquema | `https://www.datos.gov.co/api/views/<ID>.json` |
+| Filtros / agregaciones | parámetros SoQL: `$select`, `$where`, `$limit`, `$offset` |
+
+El catálogo completo de fuentes (IDs, estado y tipo de consumo) está en
+[`conf/fuentes.yaml`](../../conf/fuentes.yaml).
