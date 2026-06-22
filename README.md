@@ -105,6 +105,9 @@ copy .env.example .env   # ANTHROPIC_API_KEY para narrativas (opcional)
 
 # 4. Tablero
 .venv\Scripts\python -m streamlit run app/streamlit_app.py
+
+# 5. (Opcional) Vista espejo en Power BI
+.venv\Scripts\python -m cinepredict.cli export-powerbi   # genera powerbi/datos/*.csv
 ```
 
 Con Docker: `docker compose up --build`.

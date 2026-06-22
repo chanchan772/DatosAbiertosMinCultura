@@ -1,0 +1,41 @@
+// Medidas DAX para la vista espejo de CinePredict en Power BI.
+// Cópialas en Power BI (Modelado → Nueva medida).
+
+// ---- Demanda y brecha (fact_demanda) ----
+Demanda potencial = SUM ( fact_demanda[demanda_potencial] )
+
+Asistencia observada = SUM ( fact_demanda[espectadores_obs] )
+
+Brecha total = SUM ( fact_demanda[brecha] )
+
+Brecha (sin sala) =
+CALCULATE ( [Brecha total], dim_municipio[tiene_sala] = "Sin sala" )
+
+% Demanda insatisfecha =
+DIVIDE ( [Brecha total], [Demanda potencial] )
+
+// ---- Cobertura territorial (dim_municipio) ----
+Municipios totales = DISTINCTCOUNT ( dim_municipio[cod_divipola] )
+
+Municipios con sala =
+CALCULATE ( [Municipios totales], dim_municipio[tiene_sala] = "Con sala" )
+
+Municipios sin sala =
+CALCULATE ( [Municipios totales], dim_municipio[tiene_sala] = "Sin sala" )
+
+% Cobertura de salas =
+DIVIDE ( [Municipios con sala], [Municipios totales] )
+
+// ---- Serie mensual (fact_mensual) ----
+Espectadores (mes) = SUM ( fact_mensual[espectadores] )
+
+Espectadores histórico =
+CALCULATE ( [Espectadores (mes)], fact_mensual[tipo] = "Histórico" )
+
+Espectadores proyectado =
+CALCULATE ( [Espectadores (mes)], fact_mensual[tipo] = "Proyección" )
+
+// ---- Captura por exhibidor (fact_captura) ----
+Espectadores por exhibidor = SUM ( fact_captura[espectadores] )
+
+Salas (promedio) = AVERAGE ( fact_captura[num_salas] )

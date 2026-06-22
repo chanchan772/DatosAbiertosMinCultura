@@ -91,6 +91,15 @@ def train() -> None:
     logger.success("Entrenamiento finalizado. Ver MLflow para las métricas.")
 
 
+@app.command(name="export-powerbi")
+def export_powerbi() -> None:
+    """Exporta CSVs (esquema estrella) para la vista espejo en Power BI."""
+    from cinepredict.viz import powerbi
+
+    powerbi.export_powerbi()
+    logger.success("Datos para Power BI exportados en powerbi/datos/.")
+
+
 @app.command()
 def report() -> None:
     """Genera figuras y reportes para la presentación final."""

@@ -18,10 +18,10 @@
 | **0** | Scaffold del repositorio | ✅ Completo | 100% |
 | **1** | Integración y limpieza de datos | ✅ Pipeline E2E sobre SIREC sintético + DANE/DIVIPOLA reales | 90% |
 | **2** | Modelado predictivo (A·B·C) | ✅ A/B/C entrenados, proyección 2027, MLflow/Optuna/SHAP | 90% |
-| **3** | Visualización e interfaz | ✅ Tablero multipágina + narrativa Claude | 85% |
+| **3** | Visualización e interfaz | ✅ Tablero multipágina + narrativa Claude + vista Power BI | 95% |
 
 > **Pendiente real para el 100%:** reemplazar el SIREC sintético por el SIREC real del
-> equipo y reentrenar; afinar accesibilidad con OSMnx por subregión; vista espejo Power BI.
+> equipo y reentrenar; afinar accesibilidad con OSMnx por subregión.
 
 ### 🧪 Resultados de la corrida end-to-end (datos sintéticos)
 - **Fase 1:** 130.514 filas SIREC sintético → 14.688 filas en `analytic.parquet` (121 municipios con sala, 10,8% — concentración realista).

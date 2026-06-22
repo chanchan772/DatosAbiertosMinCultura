@@ -63,6 +63,9 @@ reports/figures/*.png
 reports/train_log.txt
 catboost_info/
 
+# ---- Power BI: datos generados (se regeneran con `cinepredict export-powerbi`) ----
+powerbi/datos/
+
 # ---- Docs ----
 site/
 
