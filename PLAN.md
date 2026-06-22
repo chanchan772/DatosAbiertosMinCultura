@@ -184,11 +184,17 @@ exhibidor, con vista espejo en Power BI para apropiación institucional.
 | Fuente | ID dataset | Consumo | Estado |
 |--------|-----------|---------|--------|
 | **DIVIPOLA — Códigos municipios** (DANE) | `gdxc-w37w` | ✅ **API SODA** (1.122 mpios, con lat/lon) | ✅ **Cableado y descargado** → `data/reference/divipola.csv` |
-| **DANE** proyecciones población (CNPV 2018) | — | ⚠️ Descarga portal DANE (no hay API nacional única) | ⬜ Pendiente |
+| **DANE proyecciones por edad** (CNPV 2018, 2018-2042) | anexo `PPED-AreaSexoEdadMun` | ✅ Descarga oficial DANE (.xlsx, ~126 MB) | ✅ **Descargado y procesado** → `data/processed/dane_poblacion.parquet` (población 15–44) |
+| **Población escolar** por municipio (MinEducación) | `nudc-7mev` | ✅ API SODA (demo) | Solo demo de consumo; no es la demografía del modelo |
 | **SIREC** exhibición (DACMI) | — | Aporte directo del equipo | ⬜ No publicado en datos abiertos aún |
 | Salas de cine y cinematecas | `p2nc-v3da` | ❌ No tabular (mapa/historia) | Descartado para API |
 | INVIAS / DNP red vial | — | Descarga / servicios geo | ⬜ En evaluación |
 | OpenStreetMap (OSMnx) | — | API Overpass | ⬜ En evaluación |
+
+> **Decisión (2026-06-22):** para la demografía del modelo usamos la **proyección
+> municipal por edad del DANE** (franja **15–44 años**, la de mayor consumo de cine),
+> no la población escolar 5–16 del MinEducación (esa queda solo como ejemplo de
+> consumo por API en la demo).
 
 **Prueba de consumo por API (reproducible):**
 ```bash

@@ -59,6 +59,15 @@ def clean() -> None:
 
 
 @app.command()
+def features() -> None:
+    """Construye las variables del modelo (p. ej. población 15–44 del DANE)."""
+    from cinepredict.data import dane
+
+    dane.build_dane_features()
+    logger.success("Features demográficas construidas en data/processed/.")
+
+
+@app.command()
 def train() -> None:
     """Entrena los tres componentes del modelo (A, B, C)."""
     from cinepredict.models import train as tr

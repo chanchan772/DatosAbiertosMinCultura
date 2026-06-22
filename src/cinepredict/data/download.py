@@ -9,12 +9,13 @@ definirse en `.env` con el identificador 4x4 real del recurso en datos.gov.co.
 
 from __future__ import annotations
 
+import urllib.request
 from pathlib import Path
 
 import pandas as pd
 from loguru import logger
 
-from cinepredict.config import RAW_DIR, REFERENCE_DIR, settings
+from cinepredict.config import EXTERNAL_DIR, RAW_DIR, REFERENCE_DIR, settings
 
 PAGE_SIZE = 50_000
 
@@ -63,13 +64,25 @@ def download_sirec() -> Path:
     return download_socrata_dataset(settings.sirec_dataset_id, RAW_DIR / "sirec.parquet")
 
 
+# Proyección municipal por área, sexo y edad (Censo 2018), 2018-2042 — anexo oficial DANE
+DANE_PROYECCION_URL = (
+    "https://www.dane.gov.co/files/censo2018/proyecciones-de-poblacion/"
+    "Municipal/PPED-AreaSexoEdadMun-2018-2042_VP.xlsx"
+)
+
+
 def download_dane_poblacion() -> Path:
-    """Descarga las proyecciones de población del DANE."""
-    if not settings.dane_poblacion_dataset_id:
-        raise RuntimeError("Falta DANE_POBLACION_DATASET_ID en .env.")
-    return download_socrata_dataset(
-        settings.dane_poblacion_dataset_id, RAW_DIR / "dane_poblacion.parquet"
-    )
+    """Descarga el anexo de proyecciones municipales por edad del DANE (~126 MB).
+
+    Es dato abierto, pero el DANE lo publica como archivo (.xlsx) en su portal,
+    no por la API SODA de datos.gov.co. Se guarda en `data/external/`.
+    """
+    out = EXTERNAL_DIR / "dane_proyecciones_municipal.xlsx"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Descargando proyecciones DANE desde {DANE_PROYECCION_URL} …")
+    urllib.request.urlretrieve(DANE_PROYECCION_URL, out)  # noqa: S310 (URL fija y confiable)
+    logger.success(f"DANE: archivo guardado en {out} ({out.stat().st_size / 1e6:.0f} MB).")
+    return out
 
 
 def download_divipola() -> Path:
