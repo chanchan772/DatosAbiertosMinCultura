@@ -16,16 +16,20 @@ with sync_playwright() as p:
     print("inicial OK")
 
     # Pulsar el botón principal de ejecución
-    btn = page.get_by_role("button", name="Ejecutar consumo de la API")
+    btn = page.get_by_role("button", name="Consumir la API de datos abiertos")
     btn.click()
-    # Esperar a que terminen las llamadas y el render del mapa
-    page.wait_for_timeout(9000)
+    # Esperar a que terminen las llamadas y el render del mapa (pydeck es asíncrono)
+    page.wait_for_timeout(14000)
     page.wait_for_load_state("networkidle")
     page.screenshot(path=str(OUT / "demo_02_consumo.png"), full_page=True)
+    # Captura enfocada al final (mapa / gráfico)
+    page.mouse.wheel(0, 30000)
+    page.wait_for_timeout(2500)
+    page.screenshot(path=str(OUT / "demo_03_mapa.png"))
     print("consumo OK")
 
     body = page.inner_text("body")
-    for needle in ["filas", "Metadatos", "municipios georreferenciados", "verificado"]:
+    for needle in ["registros descargados", "columnas", "georreferenciados", "ciclo completo"]:
         print(f"  contiene '{needle}':", needle.lower() in body.lower())
 
     browser.close()

@@ -58,6 +58,9 @@ htmlcov/
 .cache/
 great_expectations/uncommitted/
 
+# ---- Capturas de prueba / artefactos generados ----
+reports/figures/demo_*.png
+
 # ---- Docs ----
 site/
 
