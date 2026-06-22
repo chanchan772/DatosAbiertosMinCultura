@@ -14,11 +14,16 @@ FIGURES = Path(__file__).resolve().parents[1] / "reports" / "figures"
 _CSS = """
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
-  html, body, [class*="st-"], .stApp, p, span, label, li, div, input, button, select {
+  html, body, .stApp, p, li, label, .stMarkdown, input, button, select, textarea {
     font-family: 'Inter', system-ui, sans-serif !important;
   }
   h1, h2, h3, h4 { font-family: 'Sora','Inter',sans-serif !important; color:#2e2150 !important;
                    letter-spacing:-0.015em; }
+  /* NO sobrescribir la fuente de los iconos Material de Streamlit */
+  [data-testid="stIconMaterial"], .material-symbols-rounded, .material-symbols-outlined,
+  span.material-icons, [class^="material-symbols"], [class*=" material-symbols"] {
+    font-family: 'Material Symbols Rounded','Material Symbols Outlined','Material Icons' !important;
+  }
   .stApp, [data-testid="stAppViewContainer"] { background:#faf8f5; }
   [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] li { color:#2b2440; }
   [data-testid="stSidebar"] { background:linear-gradient(180deg,#2a1d47,#3b2a5a) !important; }

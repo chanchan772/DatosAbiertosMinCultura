@@ -89,17 +89,53 @@ data_url = f"{BASE}/resource/{ds}.json?" + urllib.parse.urlencode({"$limit": 600
 st.markdown("### 🔌 Endpoints (API SODA)")
 st.code(f"GET {meta_url}\nGET {data_url}", language="http")
 
+def _cache_divipola():
+    """Respaldo local de DIVIPOLA (descargado previamente por API)."""
+    from pathlib import Path
+    p = Path(__file__).resolve().parents[2] / "data" / "reference" / "divipola.csv"
+    if not p.exists():
+        return None
+    d = pd.read_csv(p, dtype=str).rename(columns={"municipio": "nom_mpio",
+                                                   "departamento": "dpto"})
+    d["longitud"] = d["lon"]; d["latitud"] = d["lat"]
+    return d
+
+
 if st.button("Consumir la API de datos abiertos ahora", type="primary",
              use_container_width=True, icon=":material/bolt:"):
-    with st.status("Consultando metadatos…", expanded=True) as s:
-        t0 = time.time(); meta = fetch(meta_url); ms = (time.time()-t0)*1000
-        cols = [c["fieldName"] for c in meta.get("columns", [])]
-        st.write(f"**{meta.get('name')}** — {len(cols)} columnas")
-        s.update(label=f"Esquema recibido ({ms:.0f} ms · HTTP 200)", state="complete")
-    with st.status("Descargando datos…", expanded=True) as s:
-        t0 = time.time(); rows = fetch(data_url); ms = (time.time()-t0)*1000
-        s.update(label=f"{len(rows):,} registros descargados en vivo ({ms:.0f} ms)", state="complete")
-    df = pd.DataFrame.from_records(rows)
+    desde_cache = False
+    try:
+        with st.status("Consultando metadatos…", expanded=True) as s:
+            t0 = time.time(); meta = fetch(meta_url); ms = (time.time()-t0)*1000
+            cols = [c["fieldName"] for c in meta.get("columns", [])]
+            st.write(f"**{meta.get('name')}** — {len(cols)} columnas")
+            s.update(label=f"Esquema recibido ({ms:.0f} ms · HTTP 200)", state="complete")
+    except Exception:  # noqa: BLE001
+        st.warning("⚠️ La API de metadatos no respondió en este intento.")
+
+    df = None
+    try:
+        with st.status("Descargando datos…", expanded=True) as s:
+            t0 = time.time(); rows = fetch(data_url); ms = (time.time()-t0)*1000
+            s.update(label=f"{len(rows):,} registros descargados en vivo ({ms:.0f} ms)",
+                     state="complete")
+        df = pd.DataFrame.from_records(rows)
+    except Exception:  # noqa: BLE001
+        if ds == "gdxc-w37w":
+            df = _cache_divipola()
+            desde_cache = df is not None
+
+    if df is None:
+        st.error("❌ datos.gov.co no respondió tras varios reintentos (caída temporal del "
+                 "portal del Estado) y no hay copia local de este conjunto. Intenta de nuevo "
+                 "en unos segundos.")
+        st.stop()
+    if desde_cache:
+        st.warning("⚠️ **La API del Estado no respondió en este momento** (datos.gov.co a veces "
+                   "presenta throttling/caídas en peticiones anónimas). Mostramos la **última "
+                   "copia descargada por API** para no interrumpir la demostración. Reintenta en "
+                   "unos segundos para verla en vivo.")
+
     st.dataframe(df.head(200), use_container_width=True, height=280)
 
     if r["mapa"] and {"longitud", "latitud"}.issubset(df.columns):
