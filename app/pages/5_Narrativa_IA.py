@@ -9,9 +9,9 @@ page("Narrativa IA", icon="📝")
 
 st.title("📝 Narrativa automática con IA")
 st.markdown(
-    "La **API de Claude (Anthropic)** está embebida para traducir las proyecciones de cada "
-    "territorio a **lenguaje claro**, facilitando que tomadores de decisión sin perfil técnico "
-    "se apropien de los resultados."
+    "Traduce las proyecciones de cada territorio a **lenguaje claro** para tomadores de "
+    "decisión. Funciona con la **API de Claude** o cualquier proveedor compatible (Groq, "
+    "Gemini, Ollama…); si no hay clave configurada, usa un **resumen por plantilla sin costo**."
 )
 
 dem = load("proyeccion_demanda_2027.parquet")
@@ -36,22 +36,25 @@ c1.metric("Municipios con sala", con_cine)
 c2.metric("Municipios sin sala", sin_cine)
 c3.metric("Demanda insatisfecha 2027", f"{brecha_total:,}")
 
-resumen = (
-    f"Departamento: {depto}. Municipios con salas de cine: {con_cine}. Municipios sin salas: "
-    f"{sin_cine}. Demanda insatisfecha total proyectada a 2027: {brecha_total:,} espectadores. "
-    f"Municipios con mayor demanda insatisfecha: "
-    + ", ".join(f"{m} ({int(b):,})" for m, b in zip(top['municipio'], top['brecha'])) + "."
-)
-with st.expander("Datos que se envían a la IA"):
-    st.code(resumen)
+contexto = {
+    "departamento": depto, "con_cine": con_cine, "sin_cine": sin_cine,
+    "brecha_total": brecha_total,
+    "top": list(zip(top["municipio"], top["brecha"])),
+}
+with st.expander("Datos que alimentan la narrativa"):
+    st.json(contexto)
 
-if st.button("✨ Generar narrativa con Claude", type="primary"):
+if st.button("✨ Generar narrativa", type="primary"):
     with st.spinner("Generando narrativa…"):
-        try:
-            from cinepredict.viz.narrative import narrar_proyeccion
-            texto = narrar_proyeccion(resumen)
-        except Exception as e:  # noqa: BLE001
-            texto = f"(No se pudo generar la narrativa: {e})"
-    st.markdown(f'<div class="card">{texto}</div>', unsafe_allow_html=True)
-    st.caption("Generado por la API de Claude a partir de las proyecciones del modelo. "
-               "Configura ANTHROPIC_API_KEY en .env para habilitarlo.")
+        import re
+        from cinepredict.viz.narrative import narrar_territorio
+        texto, fuente = narrar_territorio(contexto)
+    # Convertir negritas Markdown a HTML para que se rendericen dentro de la tarjeta
+    texto_html = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", texto)
+    st.markdown(f'<div class="card">{texto_html}</div>', unsafe_allow_html=True)
+    icono = "🤖" if fuente != "plantilla (sin costo)" else "🧩"
+    st.caption(f"{icono} Generado por: **{fuente}** · a partir de las proyecciones del modelo.")
+    if fuente == "plantilla (sin costo)":
+        st.info("ℹ️ Modo sin costo (plantilla determinística). Para narrativa con IA "
+                "generativa, configura `ANTHROPIC_API_KEY` o un proveedor compatible "
+                "(`LLM_BASE_URL`/`LLM_API_KEY`/`LLM_MODEL`) en `.env`.")
