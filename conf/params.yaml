@@ -1,0 +1,30 @@
+# Parámetros del proyecto (centralizados para reproducibilidad)
+
+proyecto:
+  horizonte_anio: 2027
+  unidad_analisis: "sala x municipio x periodo"
+
+covid:
+  inicio: "2020-03"   # cierre de salas
+  fin: "2021-12"      # normalización gradual
+
+features:
+  edad_cinefila: [15, 44]   # rango etario de mayor consumo
+
+modelo_demanda:        # Componente A (LightGBM)
+  n_estimators: 600
+  learning_rate: 0.03
+  num_leaves: 63
+
+modelo_captura:        # Componente B (CatBoost)
+  iterations: 1000
+  learning_rate: 0.03
+  depth: 8
+
+modelo_estacional:     # Componente C (StatsForecast)
+  season_length: 12
+  horizon_months: 24
+
+optuna:
+  n_trials: 50
+  timeout_min: 30

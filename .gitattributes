@@ -1,0 +1,10 @@
+# Normaliza finales de línea: el repo usa LF, el checkout en Windows usa CRLF.
+* text=auto eol=lf
+
+# Archivos binarios (no normalizar)
+*.parquet binary
+*.duckdb binary
+*.png binary
+*.jpg binary
+*.gpkg binary
+*.shp binary

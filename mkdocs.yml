@@ -1,0 +1,27 @@
+site_name: CinePredict — Documentación
+site_description: Modelo predictivo de espectadores de cine en Colombia (SIREC + DANE)
+theme:
+  name: material
+  language: es
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: amber
+  features:
+    - navigation.sections
+    - content.code.copy
+
+nav:
+  - Inicio: index.md
+  - Datos:
+      - Fuentes: datos/fuentes.md
+      - Modelo de datos: datos/modelo-datos.md
+  - Modelo:
+      - Arquitectura: modelo/arquitectura.md
+  - Guía de uso: guia-uso.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.highlight
+  - pymdownx.superfences

@@ -1,0 +1,69 @@
+# ---- Datos (no versionar datos pesados; usar DVC o descarga reproducible) ----
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+!data/**/.gitkeep
+*.parquet
+*.duckdb
+*.duckdb.wal
+*.csv
+*.xlsx
+*.geojson
+*.gpkg
+*.shp
+*.shx
+*.dbf
+# Permitir datasets de referencia pequeños y diccionarios
+!data/reference/**
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.installed.cfg
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+.env
+!.env.example
+
+# ---- Notebooks ----
+.ipynb_checkpoints/
+__marimo__/
+
+# ---- ML / Experimentos ----
+mlruns/
+mlartifacts/
+models/*.pkl
+models/*.joblib
+models/*.cbm
+models/*.txt
+optuna_study.db
+.ydata_profiling_cache/
+
+# ---- Herramientas / cachés ----
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.cache/
+great_expectations/uncommitted/
+
+# ---- Docs ----
+site/
+
+# ---- Editor / SO ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

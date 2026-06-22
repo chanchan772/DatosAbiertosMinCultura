@@ -1,0 +1,51 @@
+# Instalación recomendada:  pip install -e ".[dev]"
+# Este archivo es un espejo de las dependencias de pyproject.toml para entornos
+# que no usan el modo editable. Mantener sincronizado con pyproject.toml.
+
+# Procesamiento y exploración
+duckdb>=1.1
+polars>=1.9
+pandas>=2.2
+pyarrow>=17.0
+
+# Geoespacial
+geopandas>=1.0
+shapely>=2.0
+h3>=4.1
+osmnx>=2.0
+networkx>=3.3
+
+# Validación de datos
+pandera>=0.20
+great-expectations>=1.0
+ydata-profiling>=4.10
+
+# Modelado
+statsforecast>=1.7
+prophet>=1.1
+lightgbm>=4.5
+catboost>=1.2
+scikit-learn>=1.5
+sktime>=0.33
+
+# Optimización / experimentos / explicabilidad
+optuna>=4.0
+mlflow>=2.16
+shap>=0.46
+
+# Visualización / producto
+streamlit>=1.39
+pydeck>=0.9
+folium>=0.17
+plotly>=5.24
+
+# IA aplicada
+anthropic>=0.40
+
+# Utilidades
+sodapy>=2.2
+python-dotenv>=1.0
+pydantic>=2.9
+pydantic-settings>=2.5
+typer>=0.12
+loguru>=0.7
