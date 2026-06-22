@@ -19,6 +19,7 @@ nav:
   - Modelo:
       - Arquitectura: modelo/arquitectura.md
   - Guía de uso: guia-uso.md
+  - Guion de la demo: guion-demo.md
 
 markdown_extensions:
   - admonition
