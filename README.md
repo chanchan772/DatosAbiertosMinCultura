@@ -85,35 +85,43 @@ El quiebre **2020-2021 (COVID-19)** se modela explícitamente como variable de i
 
 ## Inicio rápido
 
-```bash
-# 1. Crear entorno (Python 3.12)
-python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-
-# 2. Instalar en modo editable con herramientas de desarrollo
-pip install -e ".[dev]"
-
-# 3. Configurar credenciales
-copy .env.example .env   # y completar SOCRATA_APP_TOKEN, ANTHROPIC_API_KEY, etc.
-
-# 4. Descargar y procesar datos
-cinepredict download --source sirec
-cinepredict download --source dane
-cinepredict clean
-
-# 5. Entrenar modelos
-cinepredict train
-
-# 6. Levantar el tablero
-streamlit run app/streamlit_app.py
-```
-
-Con Docker:
+Recomendado con [`uv`](https://docs.astral.sh/uv/) (gestiona Python 3.12 y el entorno):
 
 ```bash
-docker compose up --build
+# 1. Crear entorno Python 3.12 e instalar todo el stack
+uv venv --python 3.12 .venv
+uv pip install --python .venv/Scripts/python.exe -e ".[dev]"
+
+# 2. Configurar credenciales
+copy .env.example .env   # ANTHROPIC_API_KEY para narrativas (opcional)
+
+# 3. Pipeline completo de extremo a extremo
+.venv\Scripts\python -m cinepredict.cli download --source divipola   # API datos.gov.co
+.venv\Scripts\python -m cinepredict.cli download --source dane       # anexo DANE (~126 MB)
+.venv\Scripts\python -m cinepredict.cli synth                        # SIREC SINTÉTICO (ver nota)
+.venv\Scripts\python -m cinepredict.cli clean                        # tabla analítica + DIVIPOLA
+.venv\Scripts\python -m cinepredict.cli features                     # demografía + accesibilidad
+.venv\Scripts\python -m cinepredict.cli train                        # modelos A/B/C + proyección 2027
+
+# 4. Tablero
+.venv\Scripts\python -m streamlit run app/streamlit_app.py
 ```
+
+Con Docker: `docker compose up --build`.
+
+> ### ⚠️ Datos de SIREC sintéticos (temporal)
+> Mientras se incorpora el **SIREC real** (que administra el equipo), el comando
+> `cinepredict synth` genera un dataset sintético realista (concentración territorial,
+> estacionalidad, quiebre COVID, cadenas de exhibidores) coherente con la población DANE
+> 15–44, para construir y **probar el pipeline completo de extremo a extremo**. Al
+> disponer del SIREC real basta con reemplazar `data/raw/sirec.parquet` y reentrenar.
+
+## El tablero
+
+Multipágina (Streamlit): **Inicio** · **Datos Abiertos en vivo** (consumo por API) ·
+**Demanda y Brecha** (mapa de demanda insatisfecha 2027) · **Simulador de Exhibidor**
+(Componente B) · **Estacionalidad** (Componente C con efecto COVID) · **Narrativa IA**
+(resúmenes territoriales con la API de Claude).
 
 ## Reproducibilidad y gobierno abierto
 

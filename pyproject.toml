@@ -46,6 +46,8 @@ dependencies = [
     # --- IA aplicada ---
     "anthropic>=0.40",
     # --- Utilidades ---
+    "openpyxl>=3.1",        # lectura del anexo .xlsx del DANE
+    "matplotlib>=3.8",      # figuras SHAP / reportes
     "sodapy>=2.2",          # cliente Socrata para datos.gov.co
     "python-dotenv>=1.0",
     "pydantic>=2.9",

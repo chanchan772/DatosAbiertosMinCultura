@@ -50,6 +50,15 @@ def download(
 
 
 @app.command()
+def synth() -> None:
+    """Genera datos SINTÉTICOS de SIREC (mientras se incorpora el real)."""
+    from cinepredict.data import synthetic
+
+    synthetic.generate_sirec()
+    logger.success("SIREC sintético generado en data/raw/sirec.parquet.")
+
+
+@app.command()
 def clean() -> None:
     """Limpia y normaliza a la unidad de análisis sala × municipio × período."""
     from cinepredict.data import clean as cl
@@ -60,11 +69,17 @@ def clean() -> None:
 
 @app.command()
 def features() -> None:
-    """Construye las variables del modelo (p. ej. población 15–44 del DANE)."""
-    from cinepredict.data import dane
+    """Construye las variables del modelo (demografía DANE + accesibilidad + ensamblaje)."""
+    from pathlib import Path
 
-    dane.build_dane_features()
-    logger.success("Features demográficas construidas en data/processed/.")
+    from cinepredict.config import PROCESSED_DIR
+    from cinepredict.data import dane
+    from cinepredict.features import build
+
+    if not Path(PROCESSED_DIR / "dane_poblacion.parquet").exists():
+        dane.build_dane_features()
+    build.build_all()
+    logger.success("Features construidas en data/processed/.")
 
 
 @app.command()

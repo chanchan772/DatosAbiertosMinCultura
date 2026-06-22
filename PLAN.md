@@ -16,9 +16,19 @@
 | Fase | Descripción | Estado | Avance |
 |------|-------------|--------|--------|
 | **0** | Scaffold del repositorio | ✅ Completo | 100% |
-| **1** | Integración y limpieza de datos | 🟡 En curso (DIVIPOLA por API ✅; faltan SIREC y DANE) | 40% |
-| **2** | Modelado predictivo (A·B·C) | 🟡 Estructura lista, sin entrenar | 20% |
-| **3** | Visualización e interfaz | 🟡 Esqueleto del tablero | 15% |
+| **1** | Integración y limpieza de datos | ✅ Pipeline E2E sobre SIREC sintético + DANE/DIVIPOLA reales | 90% |
+| **2** | Modelado predictivo (A·B·C) | ✅ A/B/C entrenados, proyección 2027, MLflow/Optuna/SHAP | 90% |
+| **3** | Visualización e interfaz | ✅ Tablero multipágina + narrativa Claude | 85% |
+
+> **Pendiente real para el 100%:** reemplazar el SIREC sintético por el SIREC real del
+> equipo y reentrenar; afinar accesibilidad con OSMnx por subregión; vista espejo Power BI.
+
+### 🧪 Resultados de la corrida end-to-end (datos sintéticos)
+- **Fase 1:** 130.514 filas SIREC sintético → 14.688 filas en `analytic.parquet` (121 municipios con sala, 10,8% — concentración realista).
+- **Componente A (LightGBM):** R²≈0.99 · demanda potencial nacional 2027 ≈ 76 M · demanda insatisfecha (municipios sin sala) ≈ 44 M.
+- **Componente B (CatBoost):** R²≈0.97 · simulador de exhibidor con techo per cápita.
+- **Componente C (StatsForecast + Prophet):** 121 series municipales, horizonte 36 meses, intervención COVID.
+- **Stack instalado y verificado** en entorno Python 3.12 (uv): 27/28 librerías de la propuesta importan (incluye torch/neuralforecast, statsforecast, prophet, geopandas, osmnx). Tests: 6/6 ✅.
 
 Leyenda: ✅ completo · 🟡 en curso · ⬜ pendiente · 🔴 bloqueado
 

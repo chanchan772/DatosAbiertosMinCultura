@@ -59,7 +59,9 @@ htmlcov/
 great_expectations/uncommitted/
 
 # ---- Capturas de prueba / artefactos generados ----
-reports/figures/demo_*.png
+reports/figures/*.png
+reports/train_log.txt
+catboost_info/
 
 # ---- Docs ----
 site/
