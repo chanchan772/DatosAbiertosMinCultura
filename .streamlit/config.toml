@@ -1,0 +1,15 @@
+# Tema fijo del aplicativo — garantiza una apariencia consistente
+# independientemente del modo (claro/oscuro) del navegador o del usuario.
+[theme]
+base = "light"
+primaryColor = "#5b3fa0"
+backgroundColor = "#faf8f5"
+secondaryBackgroundColor = "#f1ebfa"
+textColor = "#2b2440"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

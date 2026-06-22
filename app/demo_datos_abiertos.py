@@ -30,20 +30,61 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      .stApp { background: #faf8f5; }
-      h1, h2, h3 { color: #3b2a5a; }
-      .hero {
-        background: linear-gradient(120deg, #3b2a5a 0%, #5b3fa0 100%);
-        color: #fff; padding: 28px 32px; border-radius: 16px; margin-bottom: 8px;
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
+
+      /* Tipografía global */
+      html, body, [class*="st-"], .stApp, .stMarkdown, p, span, label, li, div,
+      input, button, select, textarea, .stMetric {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
       }
-      .hero h1 { color: #fff; margin: 0 0 6px 0; font-size: 2.0rem; }
-      .hero p { color: #ecdffb; margin: 0; font-size: 1.02rem; }
-      .pill { display:inline-block; background:#ffd97a; color:#5a3d00;
-              padding:2px 10px; border-radius:999px; font-size:0.78rem;
-              font-weight:600; margin-right:6px; }
-      .card { background:#fff; border:1px solid #ece6f5; border-left:5px solid #5b3fa0;
-              border-radius:12px; padding:18px 22px; margin:6px 0 14px 0; }
-      .src  { color:#7a6a99; font-size:0.85rem; }
+      h1, h2, h3, h4, h5 {
+        font-family: 'Sora', 'Inter', sans-serif !important;
+        color: #2e2150 !important; letter-spacing: -0.015em; font-weight: 700;
+      }
+
+      /* Fondo claro forzado (independiente del tema del usuario) */
+      .stApp, [data-testid="stAppViewContainer"] { background: #faf8f5; }
+      [data-testid="stMarkdownContainer"] p,
+      [data-testid="stMarkdownContainer"] li { color: #2b2440; font-size: 1.0rem; }
+
+      /* Barra lateral con identidad de marca (siempre legible) */
+      [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #2a1d47 0%, #3b2a5a 100%) !important;
+      }
+      [data-testid="stSidebar"] * { color: #ece7f6 !important; }
+      [data-testid="stSidebar"] hr { border-color: #5a4880 !important; }
+
+      /* Hero */
+      .hero {
+        background: linear-gradient(120deg, #3b2a5a 0%, #6a48bd 100%);
+        color: #fff; padding: 30px 34px; border-radius: 18px; margin-bottom: 10px;
+        box-shadow: 0 8px 30px rgba(59,42,90,0.18);
+      }
+      .hero h1 { color: #fff !important; margin: 0 0 8px 0; font-size: 2.1rem; }
+      .hero p  { color: #ece0fb !important; margin: 0; font-size: 1.05rem; line-height: 1.5; }
+
+      .pill { display:inline-block; background:#ffd36b; color:#5a3d00;
+              padding:4px 13px; border-radius:999px; font-size:0.8rem;
+              font-weight:600; margin-right:7px; }
+
+      .card { background:#fff; border:1px solid #eadff7; border-left:5px solid #6a48bd;
+              border-radius:14px; padding:20px 24px; margin:6px 0 16px 0;
+              box-shadow: 0 2px 10px rgba(60,40,100,0.05); }
+      .card p { color:#2b2440 !important; line-height:1.55; }
+      .src  { color:#8a7aa8 !important; font-size:0.82rem; margin-bottom:6px; }
+
+      /* Cita / callout legible */
+      [data-testid="stMarkdownContainer"] blockquote {
+        background:#f3eefc; border-left:4px solid #6a48bd; border-radius:10px;
+        padding:14px 20px; color:#3a3357 !important;
+      }
+      [data-testid="stMarkdownContainer"] blockquote p { color:#3a3357 !important; }
+
+      /* Botón principal */
+      .stButton > button[kind="primary"] {
+        background: linear-gradient(120deg,#6a48bd,#8a5ed6); border:0;
+        font-weight:600; font-size:1.02rem; padding:12px 18px; border-radius:12px;
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -51,46 +92,66 @@ st.markdown(
 
 BASE = "https://www.datos.gov.co"
 
-# Catálogo de fuentes con contexto pensado para el usuario
+# Catálogo de fuentes con contexto pensado para el usuario.
+# "oficial" = descripción textual publicada en datos.gov.co (metadatos del recurso).
 RECURSOS = {
-    "🗺️ DIVIPOLA — Mapa político de Colombia (DANE)": {
+    "🗺️ DIVIPOLA (DANE)": {
         "id": "gdxc-w37w",
+        "titulo": "DIVIPOLA — Códigos de municipios",
+        "categoria": "Mapas Nacionales",
+        "registros": "1.122 municipios",
+        "actualizado": "corte 30 dic 2024",
+        "oficial": (
+            "“Código de la División Político-Administrativa del país (DIVIPOLA). "
+            "Actualización a corte 30 de diciembre de 2024.”"
+        ),
         "que_es": (
-            "El **catálogo oficial de municipios de Colombia** del DANE. A cada municipio "
-            "le asigna un código único de 5 dígitos (DIVIPOLA) y sus coordenadas geográficas."
+            "El **catálogo oficial de los municipios de Colombia** del DANE. A cada municipio "
+            "le asigna un **código único de 5 dígitos** (DIVIPOLA) y sus **coordenadas** "
+            "(longitud/latitud). Es la base que el Estado usa para identificar territorios sin ambigüedad."
         ),
         "publica": "DANE — Departamento Administrativo Nacional de Estadística",
-        "campos": "código de municipio, nombre, departamento, longitud y latitud",
+        "campos": "código de departamento y municipio, nombre, tipo, longitud y latitud",
         "rol": (
             "Es la **llave maestra del proyecto**: con ella unimos todas las fuentes "
-            "(cine, población, vías) hablando del *mismo* municipio sin ambigüedad. "
-            "Además, sus coordenadas nos sirven como punto central de cada municipio para "
-            "calcular **qué tan lejos está la sala de cine más cercana** (accesibilidad)."
+            "(cine, población, vías) hablando del *mismo* municipio. Además, sus coordenadas "
+            "nos dan el punto central de cada municipio para calcular **qué tan lejos está la "
+            "sala de cine más cercana** (accesibilidad)."
         ),
         "viz": "mapa",
         "viz_explica": (
-            "Cada punto es **un municipio de Colombia** ubicado con las coordenadas que trae "
-            "el propio dataset. Así verificamos que la cobertura es nacional (1.122 municipios) "
-            "y que las coordenadas son utilizables para el análisis territorial."
+            "Cada punto es **un municipio de Colombia**, ubicado con las coordenadas que trae "
+            "el propio dataset. Al pintarlos todos confirmamos la **cobertura nacional completa** "
+            "y que las coordenadas sirven para el análisis territorial."
         ),
     },
-    "👥 Población y educación por municipio (MinEducación)": {
+    "👥 Población / Educación (MinEducación)": {
         "id": "nudc-7mev",
+        "titulo": "Estadísticas de educación preescolar, básica y media — por municipio",
+        "categoria": "Educación",
+        "registros": "15.707 registros (municipio × año, 2011–2024)",
+        "actualizado": "2024",
+        "oficial": (
+            "“Información estadística de los niveles preescolar, básica y media, con indicadores "
+            "sectoriales por municipio (sin atípicos), desde 2011 hasta 2024. Las tasas de cobertura "
+            "de 2018 y 2019 se calcularon con las proyecciones de población del Censo 2018.”"
+        ),
         "que_es": (
             "Estadísticas educativas **por municipio y por año** que incluyen la **población "
-            "en edad escolar (5 a 16 años)** estimada a partir de las proyecciones del DANE."
+            "en edad escolar (5 a 16 años)** derivada de las proyecciones de población del DANE "
+            "(Censo 2018), junto con coberturas, deserción y aprobación."
         ),
-        "publica": "Ministerio de Educación Nacional (con base en proyecciones DANE)",
-        "campos": "año, municipio, departamento, población 5-16, coberturas educativas",
+        "publica": "Ministerio de Educación Nacional (población basada en proyecciones DANE)",
+        "campos": "año, municipio, departamento, población 5-16, coberturas, deserción, aprobación",
         "rol": (
             "Aporta una **variable demográfica** por municipio (tamaño de la población joven), "
-            "que es uno de los factores que explican la **demanda potencial de cine**: a mayor "
-            "población en edades de alto consumo, mayor demanda esperada."
+            "uno de los factores que explican la **demanda potencial de cine**: a mayor población "
+            "en edades de alto consumo, mayor demanda esperada (Componente A del modelo)."
         ),
         "viz": "barras",
         "viz_explica": (
-            "Mostramos los municipios con **mayor población en edad escolar**. Es un anticipo "
-            "de cómo el tamaño poblacional alimenta el modelo de demanda potencial (Componente A)."
+            "Mostramos los municipios con **mayor población en edad escolar** (año más reciente). "
+            "Es un anticipo de cómo el tamaño poblacional alimentará el modelo de demanda potencial."
         ),
     },
 }
@@ -174,26 +235,40 @@ st.markdown(
 
 st.divider()
 
-# --------------------------------------------------------------------------- paso 0
+# --------------------------------------------------------------------------- paso 1
 st.markdown("## 📂 Paso 1 · Elige la fuente de datos abiertos")
-st.caption("Selecciona un conjunto de datos públicos y abajo verás qué contiene y para qué lo usamos.")
+st.caption("Selecciona un conjunto de datos públicos. Abajo verás qué es, qué contiene y para qué lo usamos.")
 
-c1, c2 = st.columns([3, 1])
-with c1:
-    nombre = st.selectbox("Fuente de datos", list(RECURSOS.keys()), label_visibility="collapsed")
-with c2:
-    limite = st.number_input("Registros a traer", min_value=10, max_value=5000, value=1000, step=50)
+# Selector moderno (segmented control); fallback a radio en versiones antiguas.
+try:
+    nombre = st.segmented_control(
+        "Fuente de datos", list(RECURSOS.keys()),
+        default=list(RECURSOS.keys())[0], label_visibility="collapsed",
+    )
+except Exception:  # noqa: BLE001
+    nombre = st.radio("Fuente de datos", list(RECURSOS.keys()),
+                      horizontal=True, label_visibility="collapsed")
+
+if not nombre:
+    nombre = list(RECURSOS.keys())[0]
 
 r = RECURSOS[nombre]
 dataset_id = r["id"]
 
+# Ficha del dataset: metadatos clave + descripción oficial + nuestro uso.
+mc1, mc2, mc3 = st.columns(3)
+mc1.metric("Categoría", r["categoria"])
+mc2.metric("Volumen", r["registros"].split(" ")[0])
+mc3.metric("Actualizado", r["actualizado"])
+
 st.markdown(
     f"""
     <div class="card">
-      <div class="src">Fuente · {r['publica']} · datos.gov.co · id <code>{dataset_id}</code></div>
-      <p style="margin:.5rem 0;"><b>¿Qué es?</b> {r['que_es']}</p>
-      <p style="margin:.5rem 0;"><b>Campos principales:</b> {r['campos']}</p>
-      <p style="margin:.5rem 0;"><b>¿Para qué lo usamos en CinePredict?</b> {r['rol']}</p>
+      <div class="src">📡 Fuente · {r['publica']} · datos.gov.co · id <code>{dataset_id}</code> · {r['registros']}</div>
+      <p style="margin:.6rem 0;"><b>¿Qué es?</b> {r['que_es']}</p>
+      <p style="margin:.6rem 0;"><b>Descripción oficial (datos.gov.co):</b> <i>{r['oficial']}</i></p>
+      <p style="margin:.6rem 0;"><b>Campos principales:</b> {r['campos']}</p>
+      <p style="margin:.6rem 0;"><b>¿Para qué lo usamos en CinePredict?</b> {r['rol']}</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -203,14 +278,14 @@ st.markdown(
 st.markdown("## 🔌 Paso 2 · Cómo lo consumimos (API SODA)")
 st.markdown(
     "datos.gov.co expone cada conjunto por una **API REST** (estándar Socrata/SODA). "
-    "Pedimos primero el *esquema* (qué columnas tiene) y luego los *datos*. "
+    "Pedimos primero el *esquema* (qué columnas tiene) y luego **todos los datos**. "
     "Estas son las direcciones exactas que se van a llamar:"
 )
 meta_url = f"{BASE}/api/views/{dataset_id}.json"
-data_url = soda_url(dataset_id, **{"$limit": limite})
+data_url = soda_url(dataset_id, **{"$limit": 60000})  # trae el conjunto completo
 st.code(
     f"# 1) Esquema / metadatos del conjunto\nGET {meta_url}\n\n"
-    f"# 2) Datos ({limite} registros) — API SODA\nGET {data_url}",
+    f"# 2) Datos (conjunto completo) — API SODA\nGET {data_url}",
     language="http",
 )
 
