@@ -1,0 +1,11 @@
+{
+  "pares_totales": 103,
+  "emparejados": 103,
+  "sin_emparejar": 0,
+  "cobertura_pct": 100.0,
+  "por_metodo": {
+    "exacto": 95,
+    "alias": 8
+  },
+  "no_emparejados_detalle": []
+}

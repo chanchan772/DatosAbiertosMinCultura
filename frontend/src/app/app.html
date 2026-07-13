@@ -1,0 +1,33 @@
+<div class="shell" [class.collapsed]="collapsed()">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">◐</div>
+      <div class="brand-text">
+        <div class="brand-name">CinePredict</div>
+        <div class="brand-sub">SIREC · DACMI</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      @for (n of nav; track n.path) {
+      <a [routerLink]="n.path" routerLinkActive="active" class="nav-item">
+        <span class="nav-ic">{{ n.icon }}</span>
+        <span class="nav-body">
+          <span class="nav-label">{{ n.label }}</span>
+          <span class="nav-desc">{{ n.desc }}</span>
+        </span>
+      </a>
+      }
+    </nav>
+
+    <div class="side-foot">
+      <div class="reto-chip">Reto 8 · Cultura y Turismo</div>
+      <p>Modelo predictivo de espectadores de cine en Colombia. Datos abiertos, código
+      abierto y cálculos auditables.</p>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

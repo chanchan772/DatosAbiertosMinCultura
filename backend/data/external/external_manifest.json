@@ -1,0 +1,30 @@
+{
+  "divipola_municipios": {
+    "fuente": "datos.gov.co (Socrata)",
+    "dataset_id": "gdxc-w37w",
+    "url": "https://www.datos.gov.co/resource/gdxc-w37w.json",
+    "filas": 1122,
+    "descargado": "2026-07-13T17:13:35.831580+00:00"
+  },
+  "divipola_departamentos": {
+    "fuente": "datos.gov.co (Socrata)",
+    "dataset_id": "vcjz-niiq",
+    "url": "https://www.datos.gov.co/resource/vcjz-niiq.json",
+    "filas": 33,
+    "descargado": "2026-07-13T17:13:36.977968+00:00"
+  },
+  "poblacion_municipal_dane": {
+    "fuente": "DANE",
+    "dataset_id": "DANE (dane.gov.co)",
+    "url": "https://www.dane.gov.co/files/censo2018/proyecciones-de-poblacion/Municipal/DCD-area-sexo-edad-proypoblacion-Mun-2020-2035-ActPostCOVID-19.xlsx",
+    "filas": 4488,
+    "descargado": "2026-07-13T17:37:10.528877+00:00"
+  },
+  "validacion_antioquia_edad": {
+    "fuente": "datos.gov.co (Socrata)",
+    "dataset_id": "evm3-92yw",
+    "url": "https://www.datos.gov.co/resource/evm3-92yw.json",
+    "filas": 1,
+    "descargado": "2026-07-13T17:30:30.915118+00:00"
+  }
+}

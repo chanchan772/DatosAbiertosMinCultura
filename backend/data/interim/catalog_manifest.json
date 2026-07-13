@@ -1,0 +1,115 @@
+{
+  "tablas": {
+    "fact_taquilla": {
+      "filas": 281451,
+      "columnas": [
+        "anio_reporte",
+        "fecha_exhibicion",
+        "id_complejo",
+        "id_sala",
+        "titulo",
+        "admisiones",
+        "departamento",
+        "municipio",
+        "genero",
+        "duracion_tipo",
+        "clasificacion",
+        "nacion",
+        "fecha_1ra_exh",
+        "dia_semana",
+        "anio_estreno",
+        "catalogo_estreno",
+        "titulo_tipo",
+        "mes",
+        "exhibidor_tok",
+        "complejo_tok"
+      ],
+      "archivo": "fact_taquilla.parquet"
+    },
+    "serie_diaria_nacional": {
+      "filas": 7011,
+      "columnas": [
+        "fecha",
+        "anio",
+        "mes",
+        "dia_semana",
+        "semana_calendario",
+        "asistencia"
+      ],
+      "archivo": "serie_diaria_nacional.parquet"
+    },
+    "dim_complejos": {
+      "filas": 269,
+      "columnas": [
+        "departamento",
+        "municipio",
+        "n_salas",
+        "capacidad",
+        "exhibidor_tok",
+        "complejo_tok"
+      ],
+      "archivo": "dim_complejos.parquet"
+    },
+    "admisiones_municipio_anual": {
+      "filas": 303,
+      "columnas": [
+        "departamento",
+        "municipio",
+        "anio",
+        "salas_activas",
+        "admisiones",
+        "admisiones_miles"
+      ],
+      "archivo": "admisiones_municipio_anual.parquet"
+    },
+    "dim_peliculas": {
+      "filas": 2584,
+      "columnas": [
+        "anio",
+        "titulo",
+        "duracion_tipo",
+        "duracion_min",
+        "genero",
+        "clasificacion",
+        "nacionalidad",
+        "nacion",
+        "admisiones",
+        "n_municipios",
+        "n_exhibidores",
+        "n_complejos",
+        "n_pantallas",
+        "n_semanas",
+        "n_dias"
+      ],
+      "archivo": "dim_peliculas.parquet"
+    },
+    "dim_estrenos_colombia": {
+      "filas": 1595,
+      "columnas": [
+        "anio",
+        "fecha_1ra_exh",
+        "titulo",
+        "duracion_tipo",
+        "duracion_min",
+        "genero",
+        "clasificacion",
+        "nacionalidad",
+        "admisiones"
+      ],
+      "archivo": "dim_estrenos_colombia.parquet"
+    }
+  },
+  "anonimizacion": {
+    "tecnica": "Seudonimos secuenciales estables (EXH-001, CPX-001, ...) sin relacion con el nombre",
+    "campos_pseudonimizados": [
+      "exhibidor",
+      "complejo"
+    ],
+    "campos_eliminados": [
+      "direccion (PII)",
+      "id_exhibidor propietario"
+    ],
+    "preserva_resultados": true,
+    "irreversible_desde_token": true
+  }
+}

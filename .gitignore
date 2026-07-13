@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/verify.js
+
+# Datos crudos con nombres reales (se anonimizan en el pipeline)
+Datos/
+
+# Mapeo de anonimizacion — NUNCA se publica (correspondencia seudonimo->real)
+backend/data/private/
+
+# Archivo DANE crudo de 66 MB (regenerable con run_pipeline; se publica solo el parquet derivado)
+backend/data/external/*.xlsx
+
+# Logs / temporales
+*.log
+backend/data/interim/*.log
+
+# Secreto local opcional (la llave tambien esta como fallback en config.py)
+backend/.env
+
+# SE SI VERSIONAN (datos ya anonimizados / de referencia publica) para que el
+# repo corra tras 'git clone' sin los Excel crudos ni la descarga de 66 MB:
+#   backend/data/processed/*.parquet   (anonimizados)
+#   backend/data/external/*.parquet    (DIVIPOLA + poblacion DANE derivada)
+#   backend/data/*/*.json              (manifiestos y reportes)
+
+# Config local de Claude Code
+.claude/
