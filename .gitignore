@@ -9,9 +9,10 @@ frontend/node_modules/
 frontend/dist/
 frontend/.angular/
 frontend/verify.js
+frontend/static_verify.js
 
-# Datos crudos con nombres reales (se anonimizan en el pipeline)
-Datos/
+# NOTA: la carpeta Datos/ (datasets crudos del SIREC) SI se versiona a peticion
+# del equipo, para que el repositorio incluya las fuentes del concurso.
 
 # Mapeo de anonimizacion — NUNCA se publica (correspondencia seudonimo->real)
 backend/data/private/
