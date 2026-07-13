@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
+import { map, shareReplay, switchMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   Overview, DemandResult, MunicipioGeo, MunicipioDetail, Forecast, SimResult,
-  MunicipioItem, Catalog, Narrative,
+  MunicipioItem, Catalog, Narrative, Interpretation, QueryAnswer,
 } from './models';
 import { buildMunicipioDetail, buildSimulate, fallbackNarrative } from './static-compute';
+import { interpretBrowser, queryBrowser } from './deepseek-browser';
 
 export const API_BASE = environment.apiBase;
 const STATIC = environment.staticMode;
@@ -70,6 +71,21 @@ export class ApiService {
   narrative(tipo: string, contexto: any): Observable<Narrative> {
     return STATIC ? of(fallbackNarrative(tipo, contexto))
       : this.http.post<Narrative>(`${API_BASE}/api/narrative`, { tipo, contexto });
+  }
+
+  // ---- IA: interpretación por módulo y consultas en lenguaje natural ----
+  interpret(modulo: string, datos: any): Observable<Interpretation> {
+    return STATIC ? from(interpretBrowser(modulo, datos))
+      : this.http.post<Interpretation>(`${API_BASE}/api/interpret`, { modulo, datos });
+  }
+  query(pregunta: string, banda = 'pob_15_45'): Observable<QueryAnswer> {
+    if (!STATIC) return this.http.post<QueryAnswer>(`${API_BASE}/api/query`, { pregunta, banda });
+    return this.queryContext().pipe(switchMap((ctx) => from(queryBrowser(pregunta, ctx))));
+  }
+  private qctxCache?: Observable<any>;
+  private queryContext(): Observable<any> {
+    if (!this.qctxCache) this.qctxCache = this.http.get('api/query_context.json').pipe(shareReplay(1));
+    return this.qctxCache;
   }
 
   private getMap(banda: string): Observable<MapData> {

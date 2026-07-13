@@ -25,6 +25,7 @@ from backend.app.models import overview, demand, forecast, catalog
 from backend.app.models.data import municipal_panel
 from backend.app.models.exhibitor import _rendimiento_comparables
 from backend.app.models.methodology import PARAMS, METODOLOGIA
+from backend.app.services import nlquery
 
 warnings.filterwarnings("ignore")
 
@@ -61,6 +62,7 @@ def main():
     write("catalog.json", catalog.compute())
     write("methodology.json", {"parametros": PARAMS, "metodologia": METODOLOGIA})
     write("forecast.json", forecast.compute())
+    write("query_context.json", nlquery.build_context())
 
     panel_ref = municipal_panel(PARAMS["anio_referencia_demanda"], PARAMS["banda_objetivo_default"])
     munis = panel_ref[panel_ref["poblacion_objetivo"].notna()][

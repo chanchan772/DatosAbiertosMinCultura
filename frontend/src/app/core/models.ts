@@ -94,3 +94,5 @@ export interface Catalog {
 }
 
 export interface Narrative { narrativa: string; fuente: string; modelo: string | null; error?: string }
+export interface Interpretation { interpretacion: string; fuente: string; modelo: string | null; error?: string }
+export interface QueryAnswer { respuesta: string; fuente: string; modelo: string | null; error?: string }

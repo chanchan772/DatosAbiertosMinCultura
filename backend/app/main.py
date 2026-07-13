@@ -22,6 +22,7 @@ from .models import overview, demand, forecast, exhibitor, catalog
 from .models.methodology import PARAMS, METODOLOGIA
 from .models.data import municipal_panel
 from .services.deepseek import generar_narrativa
+from .services import nlquery
 
 app = FastAPI(title="CinePredict API", version="1.0",
               description="Modelo predictivo de espectadores de cine — Reto 8 (SIREC + DANE)")
@@ -160,6 +161,34 @@ class NarrativeRequest(BaseModel):
 @app.post("/api/narrative")
 def post_narrative(req: NarrativeRequest):
     return sanitize(generar_narrativa(req.contexto, req.tipo))
+
+
+class QueryRequest(BaseModel):
+    pregunta: str
+    banda: str = PARAMS["banda_objetivo_default"]
+
+
+@app.post("/api/query")
+def post_query(req: QueryRequest):
+    """Consulta en lenguaje natural sobre los datos (DeepSeek, contexto curado)."""
+    return sanitize(nlquery.answer(req.pregunta, banda=req.banda))
+
+
+@app.get("/api/query/context")
+def get_query_context(banda: str = Query(PARAMS["banda_objetivo_default"])):
+    """Contexto curado de datos (para consultas cliente en modo estático)."""
+    return sanitize(nlquery.build_context(banda))
+
+
+class InterpretRequest(BaseModel):
+    modulo: str
+    datos: dict
+
+
+@app.post("/api/interpret")
+def post_interpret(req: InterpretRequest):
+    """Interpretación larga y accesible de los datos de un módulo (DeepSeek)."""
+    return sanitize(nlquery.interpret_module(req.modulo, req.datos))
 
 
 @app.get("/")

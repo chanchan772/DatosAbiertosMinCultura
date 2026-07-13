@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../core/api.service';
 import { MunicipioItem, SimResult } from '../core/models';
 import { TracePanel } from '../shared/trace-panel';
+import { AiInterpret } from '../shared/ai-interpret';
 import { fmt, fmtCompact, pct } from '../shared/format';
 
 @Component({
   selector: 'page-simulador',
   standalone: true,
-  imports: [CommonModule, FormsModule, TracePanel],
+  imports: [CommonModule, FormsModule, TracePanel, AiInterpret],
   template: `
   <header class="section-head">
     <span class="badge violet">Simulador</span>
@@ -97,12 +98,8 @@ import { fmt, fmtCompact, pct } from '../shared/format';
 
         <trace-panel [trace]="s.trace"></trace-panel>
 
-        <div class="row" style="margin-top:12px">
-          <button class="btn primary" (click)="narrar(s)" [disabled]="loadingNarr()">
-            {{ loadingNarr() ? 'Generando…' : 'Interpretar resultado (IA)' }}</button>
-        </div>
-        @if (narrativa()) { <p class="narr">{{ narrativa()!.narrativa }}</p>
-          <div class="small muted">{{ narrativa()!.fuente === 'deepseek' ? 'DeepSeek ' + narrativa()!.modelo : 'respaldo local' }}</div> }
+        <ai-interpret [modulo]="'simulador'" [datos]="s"
+          subtitulo="Interpretación del resultado de la simulación de exhibidor."></ai-interpret>
       </div>
       } @else {
       <div class="card empty">
@@ -140,8 +137,6 @@ export class Simulador {
   banda = signal('pob_15_45');
   res = signal<SimResult | null>(null);
   loading = signal(false);
-  narrativa = signal<any>(null);
-  loadingNarr = signal(false);
   fmt = fmt; fmtCompact = fmtCompact; pct = pct;
 
   constructor() {
@@ -161,20 +156,10 @@ export class Simulador {
 
   run() {
     if (!this.cod()) return;
-    this.loading.set(true); this.narrativa.set(null);
+    this.loading.set(true);
     this.api.simulate(this.cod(), this.nSalas(), this.banda()).subscribe({
       next: (r) => { this.res.set(r); this.loading.set(false); },
       error: () => this.loading.set(false),
-    });
-  }
-  narrar(s: SimResult) {
-    this.loadingNarr.set(true);
-    const ctx = { municipio: this.titleCase(s.municipio), n_salas: s.n_salas,
-      captura_estimada: s.captura_estimada, demanda_nueva: s.demanda_nueva,
-      redistribucion: s.redistribucion, cuota_mercado: s.cuota_mercado, contexto: s.contexto };
-    this.api.narrative('simulacion', ctx).subscribe({
-      next: (r) => { this.narrativa.set(r); this.loadingNarr.set(false); },
-      error: () => this.loadingNarr.set(false),
     });
   }
   titleCase(s: string): string {

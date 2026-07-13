@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../core/api.service';
 import { DemandResult, MunicipioGeo, MunicipioDetail } from '../core/models';
 import { TracePanel } from '../shared/trace-panel';
+import { AiInterpret } from '../shared/ai-interpret';
 import { fmt, fmtCompact, pct, CLASE_COLOR, CLASE_LABEL } from '../shared/format';
 
 @Component({
   selector: 'page-brechas',
   standalone: true,
-  imports: [CommonModule, TracePanel],
+  imports: [CommonModule, TracePanel, AiInterpret],
   template: `
   <header class="section-head">
     <span class="badge coral">Demanda insatisfecha</span>
@@ -129,6 +130,11 @@ import { fmt, fmtCompact, pct, CLASE_COLOR, CLASE_LABEL } from '../shared/format
       </div>
     </div>
   </div>
+
+  <div style="margin-top:18px">
+    <ai-interpret [modulo]="'brechas'" [datos]="interpretData()"
+      subtitulo="Interpretación de las brechas de acceso y la demanda insatisfecha."></ai-interpret>
+  </div>
   } @else {
     <div class="card" style="margin-top:18px"><div class="skeleton" style="height:360px"></div></div>
   }
@@ -166,6 +172,15 @@ export class Brechas {
   fmt = fmt; fmtCompact = fmtCompact; pct = pct;
   color = (c: string) => CLASE_COLOR[c] || 'var(--muted)';
   label = (c: string) => CLASE_LABEL[c] || c;
+
+  interpretData = computed(() => {
+    const r = this.dm(); if (!r) return {};
+    return {
+      banda: this.banda(), parametros: r.parametros, totales: r.totales,
+      resumen_por_clase: r.resumen_por_clase,
+      top_municipios_insatisfecha: r.top_insatisfecha?.slice(0, 15),
+    };
+  });
 
   // límites geográficos de Colombia continental para la proyección
   private LAT = [-4.3, 13.5]; private LON = [-79.2, -66.8]; private W = 460; private H = 640;

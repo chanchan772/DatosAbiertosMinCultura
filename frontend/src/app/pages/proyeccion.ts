@@ -4,12 +4,13 @@ import { ApiService } from '../core/api.service';
 import { Forecast } from '../core/models';
 import { BarChart, LineChart, Bar } from '../shared/charts';
 import { TracePanel } from '../shared/trace-panel';
+import { AiInterpret } from '../shared/ai-interpret';
 import { fmt, fmtCompact } from '../shared/format';
 
 @Component({
   selector: 'page-proyeccion',
   standalone: true,
-  imports: [CommonModule, BarChart, LineChart, TracePanel],
+  imports: [CommonModule, BarChart, LineChart, TracePanel, AiInterpret],
   template: `
   <header class="section-head">
     <span class="badge teal">Series de tiempo</span>
@@ -89,6 +90,11 @@ import { fmt, fmtCompact } from '../shared/format';
     </table>
     <trace-panel [trace]="r.trace"></trace-panel>
   </div>
+
+  <div style="margin-top:18px">
+    <ai-interpret [modulo]="'proyeccion'" [datos]="interpretData()"
+      subtitulo="Interpretación de la estacionalidad y la proyección 2027."></ai-interpret>
+  </div>
   } @else {
     <div class="card" style="margin-top:18px"><div class="skeleton" style="height:300px"></div></div>
   }
@@ -114,6 +120,15 @@ export class Proyeccion {
 
   constructor() { this.api.forecast(2027).subscribe((r) => this.f.set(r)); }
 
+  interpretData = computed(() => {
+    const f = this.f(); if (!f) return {};
+    return {
+      anio_proyeccion: f.anio_proyeccion, central: f.tendencia_anual_proyectada,
+      escenarios: f.escenarios, intervalo: f.intervalo, backtest: f.backtest,
+      r2: f.r2_ajuste_con_2022, factores_estacionales: f.factores_estacionales,
+      historico_anual: f.historico_anual,
+    };
+  });
   serie = computed(() => (this.f()?.historico_anual || []).map((s) => ({ x: s.anio, y: s.asistencia, flag: s.es_covid })));
   factores = computed<Bar[]>(() => (this.f()?.factores_estacionales || []).map((x) => ({
     label: x.mes_nombre, value: x.factor,

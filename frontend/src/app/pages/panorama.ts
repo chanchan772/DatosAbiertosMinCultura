@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../core/api.service';
 import { Overview } from '../core/models';
 import { BarChart, LineChart, DonutChart, Bar } from '../shared/charts';
+import { AiInterpret } from '../shared/ai-interpret';
 import { fmt, fmtCompact, pct } from '../shared/format';
 
 @Component({
   selector: 'page-panorama',
   standalone: true,
-  imports: [CommonModule, BarChart, LineChart, DonutChart],
+  imports: [CommonModule, BarChart, LineChart, DonutChart, AiInterpret],
   template: `
   <header class="section-head">
     <span class="badge amber">Panorama nacional</span>
@@ -113,21 +114,8 @@ import { fmt, fmtCompact, pct } from '../shared/format';
       </div>
     </div>
 
-    <div class="card ai">
-      <div class="row">
-        <div class="card-title">Lectura ejecutiva automática <span class="badge violet">IA · DeepSeek</span></div>
-        <span class="spacer"></span>
-        <button class="btn primary" (click)="narrar()" [disabled]="loadingNarr()">
-          {{ loadingNarr() ? 'Generando…' : 'Generar resumen' }}</button>
-      </div>
-      @if (narrativa()) {
-        <p class="narr">{{ narrativa()!.narrativa }}</p>
-        <div class="small muted">Fuente: {{ narrativa()!.fuente === 'deepseek' ? 'DeepSeek ' + narrativa()!.modelo : 'respaldo local' }}
-        · redactado a partir de las cifras calculadas, sin inventar datos.</div>
-      } @else {
-        <p class="muted small" style="margin-top:8px">Genera una síntesis en lenguaje natural del panorama para tomadores de decisión.</p>
-      }
-    </div>
+    <ai-interpret [modulo]="'panorama'" [datos]="interpretData()"
+      subtitulo="Interpretación del panorama nacional de consumo de cine."></ai-interpret>
 
   </div>
   }
@@ -147,11 +135,18 @@ import { fmt, fmtCompact, pct } from '../shared/format';
 export class Panorama {
   private api = inject(ApiService);
   d = signal<Overview | null>(null);
-  narrativa = signal<any>(null);
-  loadingNarr = signal(false);
   fmt = fmt; fmtCompact = fmtCompact; pct = pct;
 
   constructor() { this.api.overview().subscribe((r) => this.d.set(r)); }
+
+  interpretData = computed(() => {
+    const d = this.d(); if (!d) return {};
+    return {
+      kpis: d.kpis, concentracion: d.concentracion, por_genero: d.por_genero,
+      por_nacion: d.por_nacion, top_municipios: d.top_municipios,
+      top_exhibidores: d.top_exhibidores, asistencia_anual: d.serie_anual,
+    };
+  });
 
   serie = computed(() => (this.d()?.serie_anual || []).map((s) => ({ x: s.anio, y: s.asistencia, flag: [2020, 2021].includes(s.anio) })));
   nacion = computed<Bar[]>(() => (this.d()?.por_nacion || []).map((x) => ({
@@ -164,18 +159,5 @@ export class Panorama {
 
   titleCase(s: string): string {
     return (s || '').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\bD\.c\./i, 'D.C.');
-  }
-  narrar() {
-    const d = this.d(); if (!d) return;
-    this.loadingNarr.set(true);
-    const ctx = {
-      admisiones_2026_parcial: d.kpis.admisiones_total, municipios_con_cine: d.kpis.municipios,
-      total_municipios_pais: 1122, concentracion: d.concentracion,
-      participacion_cine_colombiano_pct: d.por_nacion.find((x) => x.categoria === 'Colombiana')?.pct,
-    };
-    this.api.narrative('nacional', ctx).subscribe({
-      next: (r) => { this.narrativa.set(r); this.loadingNarr.set(false); },
-      error: () => this.loadingNarr.set(false),
-    });
   }
 }

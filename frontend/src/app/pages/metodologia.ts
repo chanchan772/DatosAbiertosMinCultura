@@ -1,11 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../core/api.service';
+import { AiInterpret } from '../shared/ai-interpret';
 
 @Component({
   selector: 'page-metodologia',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AiInterpret],
   template: `
   <header class="section-head">
     <span class="badge violet">Transparencia</span>
@@ -45,6 +46,11 @@ import { ApiService } from '../core/api.service';
     </div>
     }
   </div>
+
+  <div style="margin-top:18px">
+    <ai-interpret [modulo]="'metodologia'" [datos]="interpretData()"
+      subtitulo="Interpretación de la metodología, sus supuestos y limitaciones."></ai-interpret>
+  </div>
   } @else {
     <div class="card" style="margin-top:18px"><div class="skeleton" style="height:280px"></div></div>
   }
@@ -76,6 +82,7 @@ export class Metodologia {
     captura_exhibidor: 'Captura por exhibidor',
   };
   constructor() { this.api.methodology().subscribe((r) => this.m.set(r)); }
+  interpretData = computed(() => this.m() || {});
   params = computed(() => Object.entries(this.m()?.parametros || {}).map(([k, v]) => ({
     k, v: typeof v === 'object' ? JSON.stringify(v) : String(v),
   })));

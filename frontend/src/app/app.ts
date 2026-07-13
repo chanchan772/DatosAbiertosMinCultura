@@ -16,6 +16,7 @@ export class App {
     { path: '/brechas', label: 'Mapa de brechas', icon: '◉', desc: 'Demanda insatisfecha' },
     { path: '/simulador', label: 'Simulador de exhibidor', icon: '⧉', desc: 'Captura hipotética' },
     { path: '/proyeccion', label: 'Estacionalidad y 2027', icon: '⟋', desc: 'Series de tiempo' },
+    { path: '/consultas', label: 'Consultas IA', icon: '✦', desc: 'Pregunta en lenguaje natural' },
     { path: '/datos', label: 'Catálogo de datos', icon: '▤', desc: 'Fuentes y procedencia' },
     { path: '/metodologia', label: 'Metodología', icon: '∴', desc: 'Fórmulas y supuestos' },
   ];

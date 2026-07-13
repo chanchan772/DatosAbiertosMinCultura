@@ -2,12 +2,13 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../core/api.service';
 import { Catalog } from '../core/models';
+import { AiInterpret } from '../shared/ai-interpret';
 import { fmt } from '../shared/format';
 
 @Component({
   selector: 'page-datos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AiInterpret],
   template: `
   <header class="section-head">
     <span class="badge gray">Fuentes y procedencia</span>
@@ -85,6 +86,11 @@ import { fmt } from '../shared/format';
       (sin acentos) y coincidencia dentro de cada departamento, evitando confundir municipios homónimos.</p>
     </div>
   </div>
+
+  <div style="margin-top:18px">
+    <ai-interpret [modulo]="'catalogo'" [datos]="interpretData()"
+      subtitulo="Interpretación de las fuentes, su calidad y su procedencia."></ai-interpret>
+  </div>
   } @else {
     <div class="card" style="margin-top:18px"><div class="skeleton" style="height:300px"></div></div>
   }
@@ -108,6 +114,15 @@ export class Datos {
   c = signal<Catalog | null>(null);
   fmt = fmt;
   constructor() { this.api.catalog().subscribe((r) => this.c.set(r)); }
+
+  interpretData = computed(() => {
+    const c = this.c(); if (!c) return {};
+    return {
+      fuentes: (c.fuentes || []).map((f: any) => ({
+        titulo: f.titulo, fuente: f.fuente, grupo: f.grupo, filas: f.filas, usos: f.usos })),
+      anonimizacion: c.anonimizacion, reconciliacion: c.reconciliacion_territorial,
+    };
+  });
   totalAnon = computed(() => {
     const e = this.c()?.anonimizacion?.entidades_por_tipo || {};
     return Object.values(e).reduce((s: number, v: any) => s + (v as number), 0);
