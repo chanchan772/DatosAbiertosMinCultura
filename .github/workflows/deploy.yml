@@ -29,6 +29,8 @@ jobs:
         working-directory: frontend
         run: npx ng build --configuration production --base-href /DatosAbiertosMinCultura/
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/dist/frontend/browser
